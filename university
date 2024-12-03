@@ -10,6 +10,9 @@ from torchvision.models.segmentation import deeplabv3_resnet50, fcn_resnet50
 from matplotlib import pyplot as plt
 from PIL import Image
 
+from google.colab import drive
+drive.mount('/content/drive')
+
 # Cityscapes 데이터셋 클래스 정의
 class CityscapesDataset(Dataset):
     """
@@ -63,7 +66,7 @@ class CityscapesDataset(Dataset):
 # UNet 모델 정의
 class UNet(nn.Module):
     """
-    간단한 U-Net 기반 세그멘테이션 모델.
+    U-Net 기반 세그멘테이션 모델.
     ResNet34 백본을 사용하여 인코더-디코더 구조 구현.
     """
     def __init__(self, num_classes):
@@ -201,3 +204,96 @@ for model_name in ["unet", "resnet", "deeplabv3"]:
     model.load_state_dict(torch.load(f"{model_name}_model.pth"))
 
     visualize_predictions(model, test_loader, num_samples=5, model_name=model_name, device=device)
+
+
+# 성능 평가 실행
+for model_name in ["unet", "resnet", "deeplabv3"]:
+    print(f"Evaluating {model_name.upper()}...")
+
+    # 모델 로드
+    model = get_model(model_name, num_classes).to(device)
+    model.load_state_dict(torch.load(f"{model_name}_modell.pth"))
+
+    # 성능 평가
+    metrics = evaluate_model(model, test_loader, model_name, device, num_classes)
+
+    # 각 모델별 결과 출력
+    print(f"{model_name.upper()} Metrics: {metrics}")
+
+import pandas as pd
+
+def evaluate_model_to_table(model, dataloader, model_name, device, num_classes):
+    model.eval()  # 평가 모드로 전환
+    iou_scores = []
+    pixel_accuracies = []
+    precision_scores = []
+    recall_scores = []
+    f1_scores = []
+
+    with torch.no_grad():
+        for idx, (images, masks) in enumerate(dataloader):
+            images, masks = images.to(device), masks.to(device)
+
+            # 모델 예측값 생성
+            if model_name == "unet":
+                outputs = model(images)  # UNet은 직접 출력
+            else:
+                outputs = model(images)['out']  # ResNet 및 DeepLab은 'out' 키의 값을 가져옴
+
+            # 예측값을 Ground Truth 크기로 리사이즈
+            outputs = nn.functional.interpolate(outputs, size=masks.shape[1:], mode='bilinear', align_corners=False)
+
+            # 클래스 차원에서 argmax를 적용하여 클래스 예측값 생성
+            outputs = torch.argmax(outputs, dim=1)
+
+            # GPU에서 CPU로 데이터를 이동하고 numpy로 변환
+            outputs = outputs.cpu().numpy()
+            masks = masks.cpu().numpy()
+
+            # 지표 계산
+            for pred, gt in zip(outputs, masks):
+                # IoU (Jaccard Score)
+                iou = jaccard_score(gt.flatten(), pred.flatten(), average='weighted', labels=list(range(num_classes)))
+                iou_scores.append(iou)
+
+                # Pixel Accuracy
+                pixel_acc = (pred == gt).sum() / gt.size
+                pixel_accuracies.append(pixel_acc)
+
+                # Precision, Recall, F1-Score
+                precision = precision_score(gt.flatten(), pred.flatten(), average='weighted', zero_division=0)
+                recall = recall_score(gt.flatten(), pred.flatten(), average='weighted', zero_division=0)
+                f1 = f1_score(gt.flatten(), pred.flatten(), average='weighted', zero_division=0)
+
+                precision_scores.append(precision)
+                recall_scores.append(recall)
+                f1_scores.append(f1)
+
+    # DataFrame 생성
+    metrics_data = {
+        "Metric": ["Mean IoU (mIoU)", "Pixel Accuracy", "Precision", "Recall", "F1-Score"],
+        "Value": [
+            np.mean(iou_scores),
+            np.mean(pixel_accuracies),
+            np.mean(precision_scores),
+            np.mean(recall_scores),
+            np.mean(f1_scores)
+        ]
+    }
+    metrics_df = pd.DataFrame(metrics_data)
+    return metrics_df
+
+# 성능 평가 실행 및 표 출력
+for model_name in ["unet", "resnet", "deeplabv3"]:
+    print(f"Evaluating {model_name.upper()}...")
+
+    # 모델 로드
+    model = get_model(model_name, num_classes).to(device)
+    model.load_state_dict(torch.load(f"{model_name}_modell.pth"))
+
+    # 성능 평가 및 결과 출력
+    metrics_df = evaluate_model_to_table(model, test_loader, model_name, device, num_classes)
+
+    print(f"\n{model_name.upper()} - Evaluation Metrics Table:")
+    display(metrics_df)  # IPython/Jupyter 노트북 환경에서 표 시각화
+
