@@ -17,7 +17,7 @@ If you do not have the dataset, download it from the [Cityscapes website](https:
 
 1. [개요](#개요)
 2. [데이터셋](#데이터셋)
-3. [코드](#코드)]
+3. [코드](#코드)
 4. [코드설명](#코드설명)
 5. [라이선스](#라이선스)
 
