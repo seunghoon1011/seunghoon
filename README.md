@@ -43,13 +43,11 @@ If you do not have the dataset, download it from the [Cityscapes website](https:
 1. **데이터셋 다운로드**
    - 이미지 데이터: [leftImg8bit_trainvaltest.zip](https://www.cityscapes-dataset.com/file-handling/?packageID=3)
    - 어노테이션 데이터: [gtFine_trainvaltest.zip](https://www.cityscapes-dataset.com/file-handling/?packageID=1)
-
 2. **폴더 구조**
    다운로드한 데이터를 `data/` 폴더에 아래와 같이 배치합니다:
 
 data/ ├── leftImg8bit/ │ ├── train/ │ ├── val/ │ └── test/ ├── gtFine/ │ ├── train/ │ ├── val/ │ └── test/
 yaml
-
 
 ---
 
@@ -59,13 +57,17 @@ yaml
 1. **U-Net (ResNet34 백본)**
 - 맞춤형 디코더 구조로 업샘플링 수행
 - 학습 파라미터 수를 최적화하여 성능 개선
-2. **ResNet50**
+- ResNet34를 백본으로 사용하여 커스텀 구현되었습니다.
+2. **FCN-ResNet50**
 - torchvision의 사전 학습된 모델 사용
 - 세그멘테이션 클래스 수에 맞게 수정
-3. **DeepLabV3**
+- torchvision의 사전 학습된 모델을 활용하였습니다.
+3. **DeepLabV3-ResNet50**
 - torchvision의 사전 학습된 모델 사용
 - 고급 디코더로 세밀한 세그멘테이션 수행
+- torchvision의 사전 학습된 모델을 활용하였습니다.
 ---
+
 
 ## 데이터셋 라이선스
 
