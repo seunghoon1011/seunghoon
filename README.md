@@ -19,9 +19,7 @@ If you do not have the dataset, download it from the [Cityscapes website](https:
 2. [데이터셋](#데이터셋)
 3. [모델](#모델)
 4. [사용 방법](#사용-방법)
-5. [결과](#결과)
-6. [평가](#평가)
-7. [라이선스](#라이선스)
+5. [라이선스](#라이선스)
 
 ---
 
