@@ -66,25 +66,19 @@ yaml
 - torchvision의 사전 학습된 모델 사용
 - 고급 디코더로 세밀한 세그멘테이션 수행
 ---
-## 사용 방법
-1. **의존성 설치**
-프로젝트에 필요한 라이브러리를 설치합니다:
-```bash
-pip install -r requirements.txt
 
-
-## 특허
-이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 LICENSE 파일을 참고하세요.
 ## 데이터셋 라이선스
+
 이 프로젝트는 [Cityscapes Dataset](https://www.cityscapes-dataset.com/)을 사용합니다. 해당 데이터셋은 Cityscapes Dataset License의 적용을 받으며, 데이터 사용 시 다음 사항을 준수해야 합니다:
+
 1. 데이터는 연구 목적으로만 사용 가능합니다.
 2. 상업적 사용은 금지됩니다.
 3. 데이터 재배포는 허용되지 않습니다.
+
 자세한 내용은 [Cityscapes License](https://www.cityscapes-dataset.com/license/)를 참고하세요.
 
 Cityscapes 데이터셋은 Cityscapes Consortium의 소유입니다. 해당 데이터셋은 다음의 라이선스를 따릅니다:
 [Cityscapes Dataset License](https://www.cityscapes-dataset.com/license/)
-
 - 연구 및 비상업적 목적으로만 사용 가능합니다.
 - 데이터 재배포 및 상업적 사용은 금지됩니다.
 - 데이터셋을 사용하는 경우 적절한 인용이 필요합니다:
@@ -92,5 +86,8 @@ Cityscapes 데이터셋은 Cityscapes Consortium의 소유입니다. 해당 데�
 
 프로젝트에서 Cityscapes 데이터셋을 사용하는 경우, 위 약관을 준수해야 합니다.
 
+## 데이터셋 인용
 
+Cityscapes 데이터를 사용하는 경우, 다음 논문을 인용해야 합니다:
+@inproceedings{Cordts2016Cityscapes, title={The Cityscapes Dataset for Semantic Urban Scene Understanding}, author={Cordts, Marius and Omran, Mohamed and Ramos, Sebastian and Rehfeld, Timo and Enzweiler, Markus and Benenson, Rodrigo and Franke, Uwe and Roth, Stefan and Schiele, Bernt}, booktitle={Proc. of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, year={2016} }
 
