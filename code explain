@@ -1,0 +1,70 @@
+Cityscapes 데이터셋 클래스 정의
+CityscapesDataset: PyTorch Dataset 클래스를 상속받아 Cityscapes 데이터를 불러오고 전처리합니다.
+
+  __init__: 이미지와 마스크 경로를 받아 매칭.
+
+  get_image_and_mask_paths: 데이터셋의 파일 이름 규칙을 따라 이미지와 레이블 경로를 매칭.
+
+  preprocess_mask: 클래스 수 초과값을 제거.
+
+  __getitem__: 이미지를 cv2로 읽어와 전처리(크기 조정 및 변환) 후 Tensor로 변환.
+
+U-Net 모델 구현
+UNet 클래스: 세그멘테이션에 사용되는 U-Net 아키텍처를 ResNet34를 백본(encoder)으로 활용하여 정의.
+ResNet34의 마지막 두 계층을 제외해 enc1로 설정.
+디코더(decoder)는 U-Net처럼 업샘플링하며 차원을 축소하는 구조.
+최종 출력 크기를 bilinear 업샘플링으로 256x256으로 조정.
+모델 초기화 함수
+
+  get_model 함수:
+다양한 모델을 초기화하는 함수. U-Net, FCN-ResNet50, DeepLabV3-ResNet50 세 가지를 지원.
+모델별 최종 레이어를 세그멘테이션 클래스 수에 맞게 수정.
+학습 루프
+train_model 함수:
+모델을 학습하는 루프 구현.
+손실 함수는 CrossEntropyLoss를 사용.
+
+학습:
+모델이 이미지를 예측.
+손실 계산.
+역전파와 옵티마이저로 가중치 업데이트.
+Epoch별 평균 손실을 출력.
+시각화
+visualize_predictions 함수:
+학습된 모델이 테스트 데이터셋에서 예측한 결과를 시각화.
+입력 이미지, Ground Truth(실제 레이블), 모델 예측을 나란히 비교.
+성능 평가
+
+평가지표:
+IoU(Intersection over Union)
+Pixel Accuracy
+Precision, Recall, F1-Score
+evaluate_model_to_table 함수:
+테스트 데이터셋에 대해 위 지표들을 계산해 Pandas DataFrame 형식으로 반환.
+IoU 및 정확도와 같은 지표는 sklearn 라이브러리를 사용해 계산.
+데이터프레임에는 각 모델별 평균 지표가 포함
+  데이터셋, 모델 학습 및 저장
+데이터셋 경로와 하이퍼파라미터 설정:
+Cityscapes 데이터 경로: Google Drive의 데이터를 사용.
+train_loader와 test_loader 생성.
+
+모델 학습:
+세 모델(U-Net, FCN-ResNet50, DeepLabV3-ResNet50)을 각각 학습하고 가중치를 저장.
+결과 시각화 및 평가
+각 모델별 테스트 데이터를 사용하여 결과 시각화 및 평가.
+결과 지표를 표로 정리하여 비교.
+코드 실행의 흐름
+데이터 로드 및 전처리: CityscapesDataset으로 데이터를 불러와 데이터로더 생성.
+모델 정의 및 학습: get_model을 사용하여 모델 초기화 후 train_model로 학습.
+학습된 모델 저장: 각 모델별 가중치를 .pth 파일로 저장.
+시각화: visualize_predictions로 모델의 예측 결과를 확인.
+성능 평가: evaluate_model_to_table로 테스트 데이터의 성능 지표 계산 후 표로 출력.
+
+사용된 주요 라이브러리
+PyTorch: 데이터 정의, 모델 구현 및 학습 루프.
+Torchvision: ResNet 및 DeepLab 모델 로드, 데이터 변환.
+OpenCV: 이미지 읽기 및 전처리.
+NumPy: 수치 계산.
+Matplotlib: 시각화.
+scikit-learn: IoU, Precision, Recall, F1-Score 등 계산.
+
